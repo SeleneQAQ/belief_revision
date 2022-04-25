@@ -1,38 +1,40 @@
-def rule_AND(a, b):
+# rule of conjunction
+def rule_Con(a, b):
     if a == 1 and b == 1:
         return 1
     else:
         return 0
 
 
-def rule_OR(a, b):
+# rule of disjunction
+def rule_Dis(a, b):
     if a == 0 and b == 0:
         return 0
     else:
         return 1
 
 
-def rule_NOT(a):
+# rule of negation
+def rule_Neg(a):
     if a == 0:
         return 1
     if a == 1:
         return 0
 
 
-def rule_IF(a, b):
+# rule of implication
+def rule_Imp(a, b):
     if a == 1 and b == 0:
         return 0
     else:
         return 1
 
 
-def rule_BI_IF(a, b):
+# rule of biconditional
+def rule_Bic(a, b):
     if a == 1 and b == 1:
         return 1
     elif a == 0 and b == 0:
         return 1
     else:
         return 0
-
-
-print(rule_BI_IF(1, 1))
