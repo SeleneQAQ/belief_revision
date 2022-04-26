@@ -81,11 +81,17 @@ def interfaceLoop(allBeliefs):
         plausibilityOrder = input()
         allBeliefs.addBelief(belief, plausibilityOrder)
 
-
     elif action == 'p':
         print('Printing Belief Base: ')
         print(allBeliefs)
-        
+
+    elif action == 'r':
+        print('Enter belief: ')
+        belief = input()
+        print('Enter plausibility order')
+        plausibilityOrder = input()
+        allBeliefs.resolution(belief, plausibilityOrder)
+
     else:
         print('wrong input. press button to do action: ')
         interfaceLoop(allBeliefs)
