@@ -9,16 +9,17 @@ from Belief import Belief
 
 class BeliefBase:
     def __init__(self):
-        self.beliefsSet = []
+        self.beliefsSetOriginal = []
+        self.beliefsSetCNF = []
 
     def addBelief(self, belief, plausibilityOrder):
         if self.deleteSameBelief(belief, plausibilityOrder) == 1:
             x = Belief(belief, plausibilityOrder)
-            self.beliefsSet.append(x)
+            self.beliefsSetOriginal.append(x)
 
     #when a new belief come, check if it has same in the original part
     def deleteSameBelief(self, newBelief, plausibilityOrder):
-        for belief in self.beliefsSet:
+        for belief in self.beliefsSetOriginal:
             if to_cnf(belief.belief) == to_cnf(newBelief):
                 belief.belief = newBelief
                 belief.plausibilityOrder = plausibilityOrder
@@ -29,6 +30,10 @@ class BeliefBase:
         formula = to_cnf(belief)
         anti_formula = to_cnf('~(' + belief + ')')
         print([formula])
+
+        self.beliefsSetOriginal.append(Belief(belief, plausibilityOrder))
+        self.beliefsSetCNF.append(Belief(formula, plausibilityOrder))
+
         element = self.divideElement([formula], And)
         for i in element:
             print(i)
@@ -49,6 +54,6 @@ class BeliefBase:
         return result
 
     def __repr__(self):
-        if len(self.beliefsSet) == 0:
+        if len(self.beliefsSetOriginal) == 0:
             return 'empty'
-        return '\n'.join(str(x) for x in self.beliefsSet)
+        return '\n'.join(str(x) for x in self.beliefsSetOriginal)
