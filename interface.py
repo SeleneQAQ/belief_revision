@@ -132,12 +132,7 @@ def interfaceLoop(allBeliefs):
 
 if __name__ == '__main__':
     allBeliefs = BeliefBase()
-
-    allBeliefs.resolution('p>>q')
-    allBeliefs.resolution('q>>p')
-    allBeliefs.resolution('pvq')
-    allBeliefs.resolution('p')
-
+    allBeliefs.addBelief('((p|q)>>r)&(r>>(p|q))')
     menu()
     interfaceLoop(allBeliefs)
 

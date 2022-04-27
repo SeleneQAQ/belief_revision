@@ -22,41 +22,42 @@ class BeliefBase:
         if len(beliefsSet) == 1:
             pass
         else:
-            ratio = 1/len(beliefsSet)
+            ratio = 1 / len(beliefsSet)
             i = 0
             for i in range(0, len(beliefsSet)):
-                beliefsSet[i].plausibilityOrder = (i+1)*ratio
+                beliefsSet[i].plausibilityOrder = (i + 1) * ratio
 
-            
-
-    #when a new belief come, check if it has same in the original part
+    # when a new belief come, check if it has same in the original part
     def deleteSameBelief(self, newBelief):
-        
+
         for belief in self.beliefsSetOriginal:
             if to_cnf(belief.belief) == to_cnf(newBelief):
-                #belief.belief = newBelief
-                #belief.plausibilityOrder = 1.0
                 self.beliefsSetOriginal.remove(belief)
                 self.addBelief(newBelief)
                 return 0
-        
         return 1
 
     def resolution(self, belief):
         formula = to_cnf(belief)
         anti_formula = to_cnf('~(' + belief + ')')
-        print([formula])
-
-        
+        print(formula)
+        element = self.divideElement([formula], And)
         if self.deleteSameBelief(belief) == 1:
+            for i in element:
+                element_single_set = self.divideElement([i], Or)
+                print(element_single_set)
+            for originalBelief in self.beliefsSetOriginal:
+                ori_element = self.divideElement([to_cnf(originalBelief.belief)], And)
+                for j in ori_element:
+                    ori_element_set = self.divideElement([j],Or)
+                    print(ori_element_set)
+
             x = Belief(belief)
             self.beliefsSetOriginal.append(x)
             self.beliefsSetCNF.append(Belief(formula))
-            element = self.divideElement([formula], And)
             self.calcutatePlausibilityOrders(self.beliefsSetOriginal)
-            for i in element:
-                print(i)
-
+        else:
+            return
 
     # divide belief by op
     def divideElement(self, ori, op):
