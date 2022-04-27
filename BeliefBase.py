@@ -38,19 +38,28 @@ class BeliefBase:
         return 1
 
     def resolution(self, belief):
+        # transform the input belief into CNF
         formula = to_cnf(belief)
         anti_formula = to_cnf('~(' + belief + ')')
         print(formula)
+        # divide the input belief by & - like (p|r)&(q|r) will be divide into [(p|r),(q|r)]
         element = self.divideElement([formula], And)
+        # before input, check if there exists same belief in the original belief set
         if self.deleteSameBelief(belief) == 1:
+            # divide the input belief by | - like (p|r) will be divide into [p,r]
+            element_single_set = []
             for i in element:
-                element_single_set = self.divideElement([i], Or)
-                print(element_single_set)
+                element_single_set.append(self.divideElement([i], Or))
+            # divide belief in original belief set by &
             for originalBelief in self.beliefsSetOriginal:
                 ori_element = self.divideElement([to_cnf(originalBelief.belief)], And)
+                ori_element_set = []
                 for j in ori_element:
-                    ori_element_set = self.divideElement([j],Or)
-                    print(ori_element_set)
+                    ori_element_set.append(self.divideElement([j], Or))
+            # list of input belief
+            print(element_single_set)
+            # list of original belief
+            print(ori_element_set)
 
             x = Belief(belief)
             self.beliefsSetOriginal.append(x)
