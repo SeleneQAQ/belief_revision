@@ -127,8 +127,13 @@ def interfaceLoop(allBeliefs):
         
         contrary_belief = "~("+belief+")"
         contrary_belief = to_cnf(contrary_belief)
+        contrary_belief = str(contrary_belief).split('&') # We want the conjuncts to be separate
         newBeliefsSet = copy.deepcopy(allBeliefs)
-        newBeliefsSet.addBelief(contrary_belief)
+
+        for cb in contrary_belief:
+            newBeliefsSet.addBelief(cb)
+
+        # newBeliefsSet.addBelief(contrary_belief)
         newBelief = newBeliefsSet.beliefsSetOriginal[-1] # get last element, so the belief just enetered by user
         resolution = unitResolution(newBeliefsSet.beliefsSetOriginal, newBelief)
         if resolution == True:
