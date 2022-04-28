@@ -5,6 +5,7 @@ from operator import neg
 from sympy.logic.boolalg import to_cnf, And, Or, Equivalent, Implies, disjuncts
 from sortedcontainers import SortedList
 from Belief import Belief
+import calculations
 
 
 class BeliefBase:
@@ -17,7 +18,24 @@ class BeliefBase:
             x = Belief(belief)
             self.beliefsSetOriginal.append(x)
             self.calcutatePlausibilityOrders(self.beliefsSetOriginal)
+            
 
+    def convertToCNF(self):
+        self.beliefsSetCNF = []
+        for belief in self.beliefsSetOriginal:
+            cnfBelief = to_cnf(belief.belief)
+            separatedBeliefs = calculations.splitFormula('&', cnfBelief)
+            for b in separatedBeliefs:
+                x = Belief(b)
+                x.plausibilityOrder = belief.plausibilityOrder
+                self.beliefsSetCNF.append(x)
+
+    def printCNF(self):
+         print('PRINTING CNF: ')
+         for belief in self.beliefsSetCNF:
+             print(belief.belief, belief.plausibilityOrder)
+
+    
 
     def calcutatePlausibilityOrders(self, beliefsSet):
         if len(beliefsSet) == 1:

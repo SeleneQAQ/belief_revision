@@ -5,7 +5,7 @@ from sympy import to_cnf, SympifyError
 
 from BeliefBase import BeliefBase
 import Belief
-from calculations import unitResolution
+from calculations import unitResolution, splitFormula
 import copy
 
 ##
@@ -102,6 +102,17 @@ def interfaceLoop(allBeliefs):
     action = input()
     if action =='m':
         menu()
+    elif action == 't':
+        print('Enter belief: ')
+        belief = input()
+        formula_splitted = splitFormula('&', belief)
+        print('splitted formula: ', formula_splitted)
+        for formula in formula_splitted:
+            allBeliefs.addBelief(formula)
+        print(allBeliefs)
+        allBeliefs.convertToCNF()
+        allBeliefs.printCNF()
+
 
     elif action == 'a':
         print('Enter belief: ')
@@ -127,15 +138,14 @@ def interfaceLoop(allBeliefs):
         
         contrary_belief = "~("+belief+")"
         contrary_belief = to_cnf(contrary_belief)
-        contrary_belief = str(contrary_belief).split('&') # We want the conjuncts to be separate
+        split_contrary_belief = splitFormula('&', contrary_belief)
+       
         newBeliefsSet = copy.deepcopy(allBeliefs)
-
-        for cb in contrary_belief:
-            newBeliefsSet.addBelief(cb)
-
-        # newBeliefsSet.addBelief(contrary_belief)
-        newBelief = newBeliefsSet.beliefsSetOriginal[-1] # get last element, so the belief just enetered by user
-        resolution = unitResolution(newBeliefsSet.beliefsSetOriginal, newBelief)
+        newBeliefsSet.addBelief(contrary_belief)
+        newBeliefsSet.convertToCNF()
+        newBeliefsSet.printCNF()
+        #newBelief = newBeliefsSet.beliefsSet[-1] # get last element, so the belief just enetered by user
+        resolution = unitResolution(newBeliefsSet.beliefsSetCNF, belief)
         if resolution == True:
             allBeliefs.addBelief(belief)
 

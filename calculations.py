@@ -14,17 +14,8 @@ def unitResolution(beliefBase, newBelief): #input only belief orginal array
         allPairs = [(beliefBase[i], beliefBase[j])
                  for i in range(sizeOfBeliefBase) for j in range(i + 1, sizeOfBeliefBase)]
 
-
-        #for i in range(0, sizeOfBeliefBase-1):
-        #    primaryClause = to_cnf(beliefBase[i].belief) 
-        #    print('primary clasue: ', primaryClause)
-        #    for j in range(i+1, sizeOfBeliefBase):
-        #        nextClause = to_cnf(beliefBase[j].belief)
-        #        pair = [(primaryClause, nextClause)]
-        #        print('next clause: ', nextClause)
-        #        allPairs.append(pair)
         print('pairs: ', allPairs)
-        print('size: ', len(allPairs))
+
         for [clause1, clause2] in allPairs:
             clause1 = to_cnf(clause1.belief)
             clause2 = to_cnf(clause2.belief)
@@ -35,26 +26,39 @@ def unitResolution(beliefBase, newBelief): #input only belief orginal array
                 print('resolution finished, sucess')
                 return True
                 #continue
+
+            beliefs = []
+            for belief in beliefBase:
+                beliefs.append(belief.belief)
+            print('clauses: ', clausesAfterResolution, 'beliefset: ', set(beliefs))
             clausesAfterResolution = clausesAfterResolution.union(set(resolvant))
             
-        if clausesAfterResolution.issubset(set(beliefBase)):
+
+        if clausesAfterResolution.issubset(set(beliefs)):
             isResolutionFinished = True
             print('resolution finished, failed')
             return False
-           
-        else:
-           
-           
-            for iteral in clausesAfterResolution:
-                for existingIterals in beliefBase:
-                    print(iteral, type(iteral))
-                    print(existingIterals,  type(existingIterals.belief))
-                    if iteral not in str(existingIterals.belief):
-                        new = Belief.Belief(iteral)                    
-                        beliefBase.append(new)
-                        
-                  
 
+        new = Belief.Belief('hehh')
+        for iteral in clausesAfterResolution:
+            ifCanAdd = True
+            print('comparing  this:')
+            print(iteral, type(iteral))
+            print('with this: ')
+            for existingIterals in beliefBase:
+                
+                print(existingIterals.belief,  type(existingIterals.belief))
+                if iteral == str(existingIterals.belief):    
+                    ifCanAdd = False
+                    break
+                    
+            if ifCanAdd ==True:
+                new = Belief.Belief(iteral) 
+                print('appended: ', iteral)
+                beliefBase.append(new)
+            print(beliefBase)
+                        
+               
 def factor_clauses(clause1, clause2):
     print()
     literals1 = str(clause1).replace(" ", "").split('|')
@@ -85,3 +89,48 @@ def factor_clauses(clause1, clause2):
                     # print('clause text:', clause_text)
     print('returned clause: ', new_clause)     
     return new_clause
+
+def splitFormula(splitSign, formula):
+    # formula - one clause in cnf 
+    if splitSign == '&':
+        return dissociate(splitSign, formula)
+    else: print('splitFormula in calculations error. Split sign not implemented')
+
+def dissociate(op, args):
+    # function from https://github.com/aimacode/aima-python/blob/master/logic.py
+    """Given an associative op, return a flattened list result such
+    that Expr(op, *result) means the same as Expr(op, *args).
+    >>> dissociate('&', [A & B])
+    [A, B]
+    """
+    result = []
+    args = to_cnf(args)
+    operations =[ '|','(', ')']
+    def collect(subargs):
+        subargs = str(subargs)
+        print(subargs)
+
+        for i in range(0, len(str(subargs))):
+            print(subargs[i])
+            if subargs[i] == op:      
+                result.append(' ')
+                #print(subargs[i+1: len(str(subargs))-1])
+                #collect(subargs[i+1: len(str(subargs))-1])
+            elif subargs[i] == ' ':
+                continue
+            elif subargs[i] in  operations:
+                if result == []:
+                    #print('empty')
+                    result.append(subargs[i])
+                else:     
+                    result[-1] = result[-1] + subargs[i] 
+                #print('adding to result: ', result[-1], subargs[i])
+            else:
+                if result == []:
+                    result.append(subargs[i])
+                else: result[-1] = result[-1] + subargs[i]
+            #    print('current result:',  result[-1])
+            #print('end of for loop', result)
+
+    collect(args)
+    return result
