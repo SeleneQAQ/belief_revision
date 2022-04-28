@@ -5,8 +5,8 @@ from sympy import to_cnf, SympifyError
 
 from BeliefBase import BeliefBase
 import Belief
-import calculations
-
+from calculations import unitResolution
+import copy
 
 ##
 # variables a user can use as for now: p and q 
@@ -124,8 +124,10 @@ def interfaceLoop(allBeliefs):
     elif action == 'r':
         print('Enter belief: ')
         belief = input()
-        
-        calculations.unitResolution(allBeliefs.beliefsSetOriginal, Belief(belief))
+        newBeliefsSet = copy.deepcopy(allBeliefs)
+        newBeliefsSet.addBelief(belief)
+        newBelief = newBeliefsSet.beliefsSetOriginal[-1] # get last element, so the belief just enetered by user
+        unitResolution(newBeliefsSet.beliefsSetOriginal, newBelief)
 
     else:
         print('wrong input. press button to do action: ')

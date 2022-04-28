@@ -2,8 +2,8 @@ from sympy.logic.boolalg import to_cnf
 import BeliefBase
 
 def unitResolution(beliefBase, newBelief): #input only belief orginal array
-    newBeliefBase = beliefBase + newBelief
-    sizeOfBeliefBase = len(beliefBase.beliefsSetOriginal)
+    #newBeliefBase = beliefBase + newBelief
+    sizeOfBeliefBase = len(beliefBase)
     #Get all the pairs to find the resolvant
     allPairs = []
     clausesAfterResolution = set()
@@ -14,9 +14,9 @@ def unitResolution(beliefBase, newBelief): #input only belief orginal array
             for j in range(i+1, sizeOfBeliefBase):
                 nextClause = to_cnf(beliefBase[j].belief)
                 pair = [(primaryClause, nextClause)]
-                
                 allPairs.append(pair)
         for (clause1, clause2) in allPairs:
+            print('in pairs')
             resolvant = factor_clauses(clause1, clause2)
             if False in resolvant:
                 print('resolution finished, sucess')
