@@ -124,7 +124,9 @@ def interfaceLoop(allBeliefs):
     elif action == 'r':
         print('Enter belief: ')
         belief = input()
+        
         contrary_belief = "~("+belief+")"
+        contrary_belief = to_cnf(contrary_belief)
         newBeliefsSet = copy.deepcopy(allBeliefs)
         newBeliefsSet.addBelief(contrary_belief)
         newBelief = newBeliefsSet.beliefsSetOriginal[-1] # get last element, so the belief just enetered by user
@@ -142,7 +144,12 @@ def interfaceLoop(allBeliefs):
 
 if __name__ == '__main__':
     allBeliefs = BeliefBase()
+    #allBeliefs.addBelief('p>>q')
+    allBeliefs.addBelief('p')
+    #allBeliefs.addBelief('q') 
     allBeliefs.addBelief('p>>q')
+    #p | q
+    # ~p
     #allBeliefs.addBelief('((p|q)>>r)&(r>>(p|q))')
     menu()
     interfaceLoop(allBeliefs)

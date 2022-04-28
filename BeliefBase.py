@@ -26,7 +26,7 @@ class BeliefBase:
             ratio = 1 / len(beliefsSet)
             i = 0
             for i in range(0, len(beliefsSet)):
-                beliefsSet[i].plausibilityOrder = (i + 1) * ratio
+                beliefsSet[i].plausibilityOrder = round((i + 1) * ratio, 2)
 
     # when a new belief come, check if it has same in the original part
     def deleteSameBelief(self, newBelief):
