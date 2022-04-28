@@ -12,6 +12,7 @@ def unitResolution(beliefBase, newBelief): #input only belief orginal array
         allPairs = [(beliefBase[i], beliefBase[j])
                  for i in range(sizeOfBeliefBase) for j in range(i + 1, sizeOfBeliefBase)]
 
+
         #for i in range(0, sizeOfBeliefBase-1):
         #    primaryClause = to_cnf(beliefBase[i].belief) 
         #    print('primary clasue: ', primaryClause)
@@ -20,18 +21,19 @@ def unitResolution(beliefBase, newBelief): #input only belief orginal array
         #        pair = [(primaryClause, nextClause)]
         #        print('next clause: ', nextClause)
         #        allPairs.append(pair)
-
-
         print('pairs: ', allPairs)
         print('size: ', len(allPairs))
         for [clause1, clause2] in allPairs:
-            print('in pairs')
+            clause1 = to_cnf(clause1.belief)
+            clause2 = to_cnf(clause2.belief)
+            print('clause 1: ', clause1, ' clause 2: ', clause2)
             resolvant = factor_clauses(clause1, clause2)
-            if False in resolvant:
+            print('new clause from resolvant: ', resolvant)
+            if resolvant == []:
                 print('resolution finished, sucess')
                 return True
             clausesAfterResolution.union(set(resolvant))
-             
+            
         if clausesAfterResolution.issubset(set(beliefBase)):
             isResolutionFinished = True
             print('resolution finished, failed')
@@ -52,7 +54,8 @@ def factor_clauses(clause1, clause2):
 
     for l1 in literals1:
         for l2 in literals2:
-            if l1 == f'{l2}' or f'{l1}' == l2:
+            print('What we have here is:', l1, l2)
+            if l1 == f'~{l2}' or f'~{l1}' == l2:
                 print()
                 print('l1:', l1, 'l2:', l2)
 
@@ -67,5 +70,5 @@ def factor_clauses(clause1, clause2):
                 clause_text = '|'.join(clause)
                 new_clause.append('|'.join(clause))
                 # print('clause text:', clause_text)
-
+                
     return new_clause
