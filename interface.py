@@ -4,6 +4,8 @@ import logging
 from sympy import to_cnf, SympifyError
 
 from BeliefBase import BeliefBase
+import Belief
+import calculations
 
 
 ##
@@ -20,7 +22,7 @@ def menu():
     print('a: Add belief')
     print('c: Calculate possibility order')
     print('p: Print all beliefs')
-    print('r: Revision')
+    print('r: Resolution')
     print('q: Quit')
 
 
@@ -110,7 +112,9 @@ def interfaceLoop(allBeliefs):
         checkPossibilityOrder(allBeliefs)
 
     elif action == 'p':
+        print('Size of beleife base: ', len(allBeliefs.beliefsSetOriginal))
         print('Printing Belief Base: ')
+       
         print(allBeliefs)
        
 
@@ -120,7 +124,8 @@ def interfaceLoop(allBeliefs):
     elif action == 'r':
         print('Enter belief: ')
         belief = input()
-        allBeliefs.resolution(belief)
+        
+        calculations.unitResolution(allBeliefs.beliefsSetOriginal, Belief(belief))
 
     else:
         print('wrong input. press button to do action: ')

@@ -5,7 +5,6 @@ from operator import neg
 from sympy.logic.boolalg import to_cnf, And, Or, Equivalent, Implies, disjuncts
 from sortedcontainers import SortedList
 from Belief import Belief
-import calculations
 
 
 class BeliefBase:
@@ -18,6 +17,7 @@ class BeliefBase:
             x = Belief(belief)
             self.beliefsSetOriginal.append(x)
             self.calcutatePlausibilityOrders(self.beliefsSetOriginal)
+
 
     def calcutatePlausibilityOrders(self, beliefsSet):
         if len(beliefsSet) == 1:
