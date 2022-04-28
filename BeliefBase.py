@@ -5,6 +5,7 @@ from operator import neg
 from sympy.logic.boolalg import to_cnf, And, Or, Equivalent, Implies, disjuncts
 from sortedcontainers import SortedList
 from Belief import Belief
+import calculations
 
 
 class BeliefBase:
