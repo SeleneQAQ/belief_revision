@@ -125,7 +125,22 @@ def interfaceLoop(allBeliefs):
     elif action == 'co':
         print('Enter belief: ')
         belief = input()
-        allBeliefs.contraction(belief)
+        contrary_belief = "~(" + belief + ")"
+        contrary_belief = to_cnf(contrary_belief)
+        newBeliefsSet = BeliefBase()
+        resultBeliefsSet = BeliefBase()
+        for i in allBeliefs.beliefsSetOriginal:
+            newBeliefsSet.addBelief(contrary_belief)
+            newBeliefsSet.addBelief(i.belief)
+            newBeliefsSet.convertToCNF()
+            resolution = unitResolution(newBeliefsSet.beliefsSetCNF, belief)
+            if resolution == True:
+                resultBeliefsSet.addBelief(i.belief)
+                print('result:')
+                print(resultBeliefsSet)
+                newBeliefsSet = resultBeliefsSet
+            if resolution == False:
+                newBeliefsSet = resultBeliefsSet
 
     elif action == 'p':
         print('Size of beleife base: ', len(allBeliefs.beliefsSetOriginal))
@@ -165,7 +180,7 @@ def interfaceLoop(allBeliefs):
 
 if __name__ == '__main__':
     allBeliefs = BeliefBase()
-    allBeliefs.addBelief('q')
+    allBeliefs.addBelief('p')
     allBeliefs.addBelief('p&q')
     menu()
     interfaceLoop(allBeliefs)

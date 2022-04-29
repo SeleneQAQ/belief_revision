@@ -53,36 +53,43 @@ class BeliefBase:
                 return 0
         return 1
 
+    def convertToCNFForContraction(self, ConTractionSet):
+        SetCNF = []
+        for belief in ConTractionSet:
+            cnfBelief = to_cnf(belief.belief)
+            separatedBeliefs = calculations.splitFormula('&', cnfBelief)
+            for b in separatedBeliefs:
+                x = Belief(b)
+                x.plausibilityOrder = belief.plausibilityOrder
+                SetCNF.append(x)
+        return SetCNF
+
     def contraction(self, belief):
         original = self.beliefsSetOriginal
         # sort the belief by the plausibilityOrder
         original.sort(key=lambda x: x.plausibilityOrder, reverse=True)
         # get the contrary of input belief
-        contrary_belief = "~("+belief+")"
-        split_contrary_belief = calculations.splitFormula('&', contrary_belief)
+        contrary_belief = belief
         # transfrom it into CNF
         contrary_beliefCNF = Belief(to_cnf(contrary_belief))
         # the result of contractionSet
-        resultSet = []
-        contractionSet = [contrary_beliefCNF]
+        finalSet = []
+        contractionSet = []
+        contractionSet.append(contrary_beliefCNF)
         # for each element in beliefset, check if it is conflict with contrary of input belief, then we add more element
         # if conflict, we will not input it into the result
         for i in original:
             cnf_i = to_cnf(i.belief)
-            CNFSet = contractionSet
-            separatedBeliefs = calculations.splitFormula('&', cnf_i)
-            for b in separatedBeliefs:
-                x = Belief(b)
-                x.plausibilityOrder = i.plausibilityOrder
-                CNFSet.append(x)
-            resolution = calculations.unitResolution(CNFSet, belief)
-            CNFSet = []
+            contractionSet.append(cnf_i)
+            self.calcutatePlausibilityOrders(contractionSet)
+            resolution = calculations.unitResolution(self.convertToCNFForContraction(contractionSet), belief)
             if resolution == True:
                 print('true res')
-                resultSet.append(i)
-                contractionSet.append(x)
+                finalSet.append(i)
+            if resolution == False:
+                contractionSet.remove(cnf_i)
         print('result:')
-        print(resultSet)
+        print(finalSet)
 
     # divide belief by op
     def divideElement(self, ori, op):
