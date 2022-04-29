@@ -166,7 +166,7 @@ def interfaceLoop(allBeliefs):
 if __name__ == '__main__':
     allBeliefs = BeliefBase()
     allBeliefs.addBelief('p&q')
-    allBeliefs.addBelief('p')
+    allBeliefs.addBelief('q')
     menu()
     interfaceLoop(allBeliefs)
 
