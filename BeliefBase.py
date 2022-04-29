@@ -18,7 +18,6 @@ class BeliefBase:
             x = Belief(belief)
             self.beliefsSetOriginal.append(x)
             self.calcutatePlausibilityOrders(self.beliefsSetOriginal)
-            
 
     def convertToCNF(self):
         self.beliefsSetCNF = []
@@ -31,11 +30,9 @@ class BeliefBase:
                 self.beliefsSetCNF.append(x)
 
     def printCNF(self):
-         print('PRINTING CNF: ')
-         for belief in self.beliefsSetCNF:
-             print(belief.belief, belief.plausibilityOrder)
-
-    
+        print('PRINTING CNF: ')
+        for belief in self.beliefsSetCNF:
+            print(belief.belief, belief.plausibilityOrder)
 
     def calcutatePlausibilityOrders(self, beliefsSet):
         if len(beliefsSet) == 1:
@@ -56,36 +53,36 @@ class BeliefBase:
                 return 0
         return 1
 
-    def resolution(self, belief):
-        # transform the input belief into CNF
-        formula = to_cnf(belief)
-        anti_formula = to_cnf('~(' + belief + ')')
-        print(formula)
-        # divide the input belief by & - like (p|r)&(q|r) will be divide into [(p|r),(q|r)]
-        element = self.divideElement([formula], And)
-        # before input, check if there exists same belief in the original belief set
-        if self.deleteSameBelief(belief) == 1:
-            # divide the input belief by | - like (p|r) will be divide into [p,r]
-            element_single_set = []
-            for i in element:
-                element_single_set.append(self.divideElement([i], Or))
-            # divide belief in original belief set by &
-            for originalBelief in self.beliefsSetOriginal:
-                ori_element = self.divideElement([to_cnf(originalBelief.belief)], And)
-                ori_element_set = []
-                for j in ori_element:
-                    ori_element_set.append(self.divideElement([j], Or))
-            # list of input belief
-            print(element_single_set)
-            # list of original belief
-            print(ori_element_set)
-
-            x = Belief(belief)
-            self.beliefsSetOriginal.append(x)
-            self.beliefsSetCNF.append(Belief(formula))
-            self.calcutatePlausibilityOrders(self.beliefsSetOriginal)
-        else:
-            return
+    def contraction(self, belief):
+        original = self.beliefsSetOriginal
+        # sort the belief by the plausibilityOrder
+        original.sort(key=lambda x: x.plausibilityOrder, reverse=True)
+        # get the contrary of input belief
+        contrary_belief = "~("+belief+")"
+        split_contrary_belief = calculations.splitFormula('&', contrary_belief)
+        # transfrom it into CNF
+        contrary_beliefCNF = Belief(to_cnf(contrary_belief))
+        # the result of contractionSet
+        resultSet = []
+        contractionSet = [contrary_beliefCNF]
+        # for each element in beliefset, check if it is conflict with contrary of input belief, then we add more element
+        # if conflict, we will not input it into the result
+        for i in original:
+            cnf_i = to_cnf(i.belief)
+            CNFSet = contractionSet
+            separatedBeliefs = calculations.splitFormula('&', cnf_i)
+            for b in separatedBeliefs:
+                x = Belief(b)
+                x.plausibilityOrder = i.plausibilityOrder
+                CNFSet.append(x)
+            resolution = calculations.unitResolution(CNFSet, belief)
+            CNFSet = []
+            if resolution == True:
+                print('true res')
+                resultSet.append(i)
+                contractionSet.append(x)
+        print('result:')
+        print(resultSet)
 
     # divide belief by op
     def divideElement(self, ori, op):

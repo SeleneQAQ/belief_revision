@@ -122,6 +122,11 @@ def interfaceLoop(allBeliefs):
     elif action == 'c':
         checkPossibilityOrder(allBeliefs)
 
+    elif action == 'co':
+        print('Enter belief: ')
+        belief = input()
+        allBeliefs.contraction(belief)
+
     elif action == 'p':
         print('Size of beleife base: ', len(allBeliefs.beliefsSetOriginal))
         print('Printing Belief Base: ')
@@ -149,6 +154,7 @@ def interfaceLoop(allBeliefs):
         if resolution == True:
             allBeliefs.addBelief(belief)
 
+
     else:
         print('wrong input. press button to do action: ')
         interfaceLoop(allBeliefs)
@@ -159,13 +165,8 @@ def interfaceLoop(allBeliefs):
 
 if __name__ == '__main__':
     allBeliefs = BeliefBase()
-    #allBeliefs.addBelief('p>>q')
+    allBeliefs.addBelief('p&q')
     allBeliefs.addBelief('p')
-    #allBeliefs.addBelief('q') 
-    allBeliefs.addBelief('p>>q')
-    #p | q
-    # ~p
-    #allBeliefs.addBelief('((p|q)>>r)&(r>>(p|q))')
     menu()
     interfaceLoop(allBeliefs)
 
