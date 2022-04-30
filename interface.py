@@ -129,22 +129,23 @@ def interfaceLoop(allBeliefs):
         print('Enter belief: ')
         belief = input()
         belief = belief.lower()
-        contrary_belief = "~(" + belief + ")"
+        contrary_belief = "~("+belief+")"
         contrary_belief = to_cnf(contrary_belief)
         newBeliefsSet = BeliefBase()
         resultBeliefsSet = BeliefBase()
+        allBeliefs.beliefsSetOriginal.sort(key=lambda x: x.plausibilityOrder, reverse=True)
         for i in allBeliefs.beliefsSetOriginal:
             newBeliefsSet.addBlindly(contrary_belief)
             newBeliefsSet.addBlindly(i.belief)
             newBeliefsSet.convertToCNF()
             resolution = unitResolution(newBeliefsSet.beliefsSetCNF, belief)
-            if resolution == True:
-                resultBeliefsSet.addBelief(i.belief)
-                print('result:')
-                print(resultBeliefsSet)
-                newBeliefsSet = resultBeliefsSet
             if resolution == False:
-                newBeliefsSet = resultBeliefsSet
+                resultBeliefsSet.addBelief(i.belief)
+                newBeliefsSet = copy.deepcopy(resultBeliefsSet)
+            if resolution == True:
+                newBeliefsSet = copy.deepcopy(resultBeliefsSet)
+            print(resultBeliefsSet)
+            allBeliefs = copy.deepcopy(resultBeliefsSet)
 
     elif action == 'p':
         print('Size of beleife base: ', len(allBeliefs.beliefsSetOriginal))
@@ -189,8 +190,7 @@ def interfaceLoop(allBeliefs):
 if __name__ == '__main__':
     allBeliefs = BeliefBase()
     allBeliefs.addBelief('p')
-    allBeliefs.addBelief('q')
-    #allBeliefs.addBelief('p&q')
+    allBeliefs.addBelief('p&q')
     menu()
     interfaceLoop(allBeliefs)
 
