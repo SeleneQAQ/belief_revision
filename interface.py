@@ -23,6 +23,7 @@ def menu():
     print('c: Calculate possibility order')
     print('p: Print all beliefs')
     print('r: Resolution')
+    print('rev: revision')
     print('q: Quit')
 
 def contraction(allBeliefs, belief):
@@ -183,6 +184,30 @@ def interfaceLoop(allBeliefs):
         resolution = unitResolution(newBeliefsSet.beliefsSetCNF, belief)
         if resolution == False:
             allBeliefs.addBelief(belief)
+
+    elif action == 'rev':
+        print('Enter belief: ')
+        belief = input()
+        belief = belief.lower()
+
+        contrary_belief = "~(" + belief + ")"
+
+        newBeliefsSet = copy.deepcopy(allBeliefs)
+        newBeliefsSet.addBlindly(contrary_belief)
+        newBeliefsSet.convertToCNF()
+
+        #isInputValid = validityCheck(belief, logic)
+        #if isInputValid == False: interfaceLoop(allBeliefs)
+
+        resolution = unitResolution(newBeliefsSet.beliefsSetCNF, belief)
+
+        if resolution == True:
+            allBeliefs.addBelief(belief)
+        else:
+            print("here")
+            print(contrary_belief)
+            allBeliefs = copy.deepcopy(contraction(allBeliefs, contrary_belief))
+            allBeliefs.addBlindly(belief)
 
 
     else:

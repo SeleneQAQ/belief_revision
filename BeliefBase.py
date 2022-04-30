@@ -3,7 +3,6 @@ import logging
 from operator import neg
 
 from sympy.logic.boolalg import to_cnf, And, Or, Equivalent, Implies, disjuncts
-from sortedcontainers import SortedList
 from Belief import Belief
 import calculations
 
@@ -73,6 +72,8 @@ class BeliefBase:
         if counter == len(self.beliefsSetOriginal):
             return 1
         return 0
+
+
 
     def __repr__(self):
         if len(self.beliefsSetOriginal) == 0:
