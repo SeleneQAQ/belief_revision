@@ -25,7 +25,7 @@ def menu():
     print('r: Resolution')
     print('q: Quit')
 
-def contraction(allBeliefs,belief):
+def contraction(allBeliefs, belief):
     belief = belief.lower()
     contrary_belief = "~(" + belief + ")"
     contrary_belief = to_cnf(contrary_belief)
@@ -151,7 +151,7 @@ def interfaceLoop(allBeliefs):
     elif action == 'co':
         print('Enter belief: ')
         belief = input()
-        allBeliefs=copy.deepcopy(contraction(allBeliefs, belief))
+        allBeliefs = copy.deepcopy(contraction(allBeliefs, belief))
 
     elif action == 'p':
         print('Size of beleife base: ', len(allBeliefs.beliefsSetOriginal))
