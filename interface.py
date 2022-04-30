@@ -40,7 +40,7 @@ def contraction(allBeliefs, belief):
         newBeliefsSet.convertToCNF()
         resolution = unitResolution(newBeliefsSet.beliefsSetCNF, belief)
         if resolution == False:
-            resultBeliefsSet.addBelief(i.belief)
+            resultBeliefsSet.addBliefWithOrder(i.belief, i.plausibilityOrder)
             newBeliefsSet = copy.deepcopy(resultBeliefsSet)
         if resolution == True:
             newBeliefsSet = copy.deepcopy(resultBeliefsSet)
@@ -49,6 +49,7 @@ def contraction(allBeliefs, belief):
     print(allBeliefs.AGMContractionSuccess(belief))
     print('InclusionSuccess: ')
     print(allBeliefs.AGMInclusionSuccess(oriBeliefsSet))
+    resultBeliefsSet.beliefsSetOriginal.sort(key=lambda x: x.plausibilityOrder, reverse=False)
     return resultBeliefsSet
 
 def checkPossibilityOrder(allBeliefs):
@@ -152,7 +153,7 @@ def interfaceLoop(allBeliefs):
     elif action == 'co':
         print('Enter belief: ')
         belief = input()
-        allBeliefs = copy.deepcopy(contraction(allBeliefs, belief))
+        allBeliefs= copy.deepcopy(contraction(allBeliefs, belief))
 
     elif action == 'p':
         print('Size of beleife base: ', len(allBeliefs.beliefsSetOriginal))
@@ -219,7 +220,8 @@ def interfaceLoop(allBeliefs):
 
 if __name__ == '__main__':
     allBeliefs = BeliefBase()
-    allBeliefs.addBelief('p')
+    allBeliefs.addBelief('p|q')
+    allBeliefs.addBelief('p>>q')
     allBeliefs.addBelief('p&q')
     menu()
     interfaceLoop(allBeliefs)

@@ -18,6 +18,11 @@ class BeliefBase:
             self.beliefsSetOriginal.append(x)
             self.calcutatePlausibilityOrders(self.beliefsSetOriginal)
 
+    def addBliefWithOrder(self, belief, plausibilityOrder):
+        x = Belief(belief)
+        x.plausibilityOrder = plausibilityOrder
+        self.beliefsSetOriginal.append(x)
+
     def addBlindly(self, belief):
         x = Belief(belief)
         self.beliefsSetOriginal.append(x)
