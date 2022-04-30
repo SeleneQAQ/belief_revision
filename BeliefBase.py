@@ -19,6 +19,11 @@ class BeliefBase:
             self.beliefsSetOriginal.append(x)
             self.calcutatePlausibilityOrders(self.beliefsSetOriginal)
 
+    def addBlindly(self, belief):
+        x = Belief(belief)
+        self.beliefsSetOriginal.append(x)
+        self.calcutatePlausibilityOrders(self.beliefsSetOriginal)
+
     def convertToCNF(self):
         self.beliefsSetCNF = []
         for belief in self.beliefsSetOriginal:

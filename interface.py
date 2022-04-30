@@ -5,7 +5,7 @@ from sympy import to_cnf, SympifyError
 
 from BeliefBase import BeliefBase
 import Belief
-from calculations import unitResolution, splitFormula
+from calculations import unitResolution, splitFormula, validityCheck
 import copy
 
 ##
@@ -100,11 +100,13 @@ def checkPossibilityOrder(allBeliefs):
 def interfaceLoop(allBeliefs):
     
     action = input()
+    action = action.lower()
     if action =='m':
         menu()
     elif action == 't':
         print('Enter belief: ')
         belief = input()
+        belief = belief.lower()
         formula_splitted = splitFormula('&', belief)
         print('splitted formula: ', formula_splitted)
         for formula in formula_splitted:
@@ -117,6 +119,7 @@ def interfaceLoop(allBeliefs):
     elif action == 'a':
         print('Enter belief: ')
         belief = input()
+        belief = belief.lower()
         allBeliefs.addBelief(belief)
 
     elif action == 'c':
@@ -125,13 +128,14 @@ def interfaceLoop(allBeliefs):
     elif action == 'co':
         print('Enter belief: ')
         belief = input()
+        belief = belief.lower()
         contrary_belief = "~(" + belief + ")"
         contrary_belief = to_cnf(contrary_belief)
         newBeliefsSet = BeliefBase()
         resultBeliefsSet = BeliefBase()
         for i in allBeliefs.beliefsSetOriginal:
-            newBeliefsSet.addBelief(contrary_belief)
-            newBeliefsSet.addBelief(i.belief)
+            newBeliefsSet.addBlindly(contrary_belief)
+            newBeliefsSet.addBlindly(i.belief)
             newBeliefsSet.convertToCNF()
             resolution = unitResolution(newBeliefsSet.beliefsSetCNF, belief)
             if resolution == True:
@@ -155,18 +159,22 @@ def interfaceLoop(allBeliefs):
     elif action == 'r':
         print('Enter belief: ')
         belief = input()
+        belief = belief.lower()
         
         contrary_belief = "~("+belief+")"
         contrary_belief = to_cnf(contrary_belief)
         split_contrary_belief = splitFormula('&', contrary_belief)
        
         newBeliefsSet = copy.deepcopy(allBeliefs)
-        newBeliefsSet.addBelief(contrary_belief)
+        newBeliefsSet.addBlindly(contrary_belief)
         newBeliefsSet.convertToCNF()
         newBeliefsSet.printCNF()
         #newBelief = newBeliefsSet.beliefsSet[-1] # get last element, so the belief just enetered by user
+        isInputValid = validityCheck(belief, logic)
+        if isInputValid == False: interfaceLoop(allBeliefs)
+
         resolution = unitResolution(newBeliefsSet.beliefsSetCNF, belief)
-        if resolution == True:
+        if resolution == False:
             allBeliefs.addBelief(belief)
 
 
@@ -181,7 +189,8 @@ def interfaceLoop(allBeliefs):
 if __name__ == '__main__':
     allBeliefs = BeliefBase()
     allBeliefs.addBelief('p')
-    allBeliefs.addBelief('p&q')
+    #allBeliefs.addBelief('q')
+    #allBeliefs.addBelief('p&q')
     menu()
     interfaceLoop(allBeliefs)
 

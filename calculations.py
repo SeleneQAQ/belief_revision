@@ -30,14 +30,15 @@ def unitResolution(beliefBase, newBelief): #input only belief orginal array
             beliefs = []
             for belief in beliefBase:
                 beliefs.append(belief.belief)
+
             print('clauses: ', clausesAfterResolution, 'beliefset: ', set(beliefs))
             clausesAfterResolution = clausesAfterResolution.union(set(resolvant))
             
-
-        if clausesAfterResolution.issubset(set(beliefs)):
-            isResolutionFinished = True
-            print('resolution finished, failed')
-            return False
+        #if len(clausesAfterResolution) >0:
+            if clausesAfterResolution.issubset(set(beliefs)):
+                isResolutionFinished = True
+                print('resolution finished, failed')
+                return False
 
         new = Belief.Belief('hehh')
         for iteral in clausesAfterResolution:
@@ -57,6 +58,10 @@ def unitResolution(beliefBase, newBelief): #input only belief orginal array
                 print('appended: ', iteral)
                 beliefBase.append(new)
             print(beliefBase)
+
+        #if len(clausesAfterResolution) == 0:
+        #    print('resolution finished, failed clauses were empty')
+        #    return False
                         
                
 def factor_clauses(clause1, clause2):
@@ -65,21 +70,20 @@ def factor_clauses(clause1, clause2):
     literals2 = str(clause2).replace(" ", "").split('|')
 
     new_clause = []
-
+    print('entered resolvant with: ',clause1, ' ',  clause2)
     for l1 in literals1:
         for l2 in literals2:
             print(l1, ' ',  l2)
-            if l1 == f'~{l2}' or f'~{l1}' == l2:
+            if f'{l1}' == f'~{l2}' or f'~{l1}' == f'{l2}':
                 a = literals1.copy()
                 a.remove(l1)
                 b = literals2.copy()
-                b.remove(l2)
-
-               
-     
+                b.remove(l2)     
+                print(a, '+', b)
                 # Use set to remove dublicates
                 clause = list(set(a + b))
-                if clause ==[]:
+                if clause == []:
+                    
                     new_clause.append(False)
                 else:
                     # print('clause:', clause)
@@ -89,6 +93,31 @@ def factor_clauses(clause1, clause2):
                     # print('clause text:', clause_text)
     print('returned clause: ', new_clause)     
     return new_clause
+
+def validityCheck(newBelief, allowedSigns):
+    q = ""
+    for i in newBelief:
+        print(i)
+        if i.isalpha():
+            q = "".join([q,i])
+    #print('result', q)
+    for i in q:
+        if i not in allowedSigns:
+            print('not allowed logic signs deteced. please use only: ', allowedSigns)
+            return False
+        #uniqueSign = True
+        #for x in BeliefBase:
+        #    if i in x:
+        #        uniqueSign = False
+        #        break
+        #if uniqueSign == True:
+        #    print(i, ' is new in database, add it ')
+        #    return True
+    return True
+
+    
+
+
 
 def splitFormula(splitSign, formula):
     # formula - one clause in cnf 
@@ -108,10 +137,10 @@ def dissociate(op, args):
     operations =[ '|','(', ')']
     def collect(subargs):
         subargs = str(subargs)
-        print(subargs)
+        #print(subargs)
 
         for i in range(0, len(str(subargs))):
-            print(subargs[i])
+            #print(subargs[i])
             if subargs[i] == op:      
                 result.append(' ')
                 #print(subargs[i+1: len(str(subargs))-1])
