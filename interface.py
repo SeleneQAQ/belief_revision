@@ -196,15 +196,14 @@ def interfaceLoop(allBeliefs):
         newBeliefsSet.addBlindly(contrary_belief)
         newBeliefsSet.convertToCNF()
 
-        #isInputValid = validityCheck(belief, logic)
-        #if isInputValid == False: interfaceLoop(allBeliefs)
+        isInputValid = validityCheck(belief, logic)
+        if isInputValid == False: interfaceLoop(allBeliefs)
 
         resolution = unitResolution(newBeliefsSet.beliefsSetCNF, belief)
 
         if resolution == True:
             allBeliefs.addBelief(belief)
         else:
-            print("here")
             print(contrary_belief)
             allBeliefs = copy.deepcopy(contraction(allBeliefs, contrary_belief))
             allBeliefs.addBlindly(belief)
