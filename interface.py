@@ -25,7 +25,30 @@ def menu():
     print('r: Resolution')
     print('q: Quit')
 
-
+def contraction(allBeliefs,belief):
+    belief = belief.lower()
+    contrary_belief = "~(" + belief + ")"
+    contrary_belief = to_cnf(contrary_belief)
+    oriBeliefsSet = copy.deepcopy(allBeliefs)
+    newBeliefsSet = BeliefBase()
+    resultBeliefsSet = BeliefBase()
+    allBeliefs.beliefsSetOriginal.sort(key=lambda x: x.plausibilityOrder, reverse=True)
+    for i in allBeliefs.beliefsSetOriginal:
+        newBeliefsSet.addBlindly(contrary_belief)
+        newBeliefsSet.addBlindly(i.belief)
+        newBeliefsSet.convertToCNF()
+        resolution = unitResolution(newBeliefsSet.beliefsSetCNF, belief)
+        if resolution == False:
+            resultBeliefsSet.addBelief(i.belief)
+            newBeliefsSet = copy.deepcopy(resultBeliefsSet)
+        if resolution == True:
+            newBeliefsSet = copy.deepcopy(resultBeliefsSet)
+    print(resultBeliefsSet)
+    print('ContractionSuccess: ')
+    print(allBeliefs.AGMContractionSuccess(belief))
+    print('InclusionSuccess: ')
+    print(allBeliefs.AGMInclusionSuccess(oriBeliefsSet))
+    return resultBeliefsSet
 
 def checkPossibilityOrder(allBeliefs):
     print()
@@ -128,29 +151,7 @@ def interfaceLoop(allBeliefs):
     elif action == 'co':
         print('Enter belief: ')
         belief = input()
-        belief = belief.lower()
-        contrary_belief = "~("+belief+")"
-        contrary_belief = to_cnf(contrary_belief)
-        oriBeliefsSet = copy.deepcopy(allBeliefs)
-        newBeliefsSet = BeliefBase()
-        resultBeliefsSet = BeliefBase()
-        allBeliefs.beliefsSetOriginal.sort(key=lambda x: x.plausibilityOrder, reverse=True)
-        for i in allBeliefs.beliefsSetOriginal:
-            newBeliefsSet.addBlindly(contrary_belief)
-            newBeliefsSet.addBlindly(i.belief)
-            newBeliefsSet.convertToCNF()
-            resolution = unitResolution(newBeliefsSet.beliefsSetCNF, belief)
-            if resolution == False:
-                resultBeliefsSet.addBelief(i.belief)
-                newBeliefsSet = copy.deepcopy(resultBeliefsSet)
-            if resolution == True:
-                newBeliefsSet = copy.deepcopy(resultBeliefsSet)
-            print(resultBeliefsSet)
-            allBeliefs = copy.deepcopy(resultBeliefsSet)
-            print('ContractionSuccess: ')
-            print(allBeliefs.AGMContractionSuccess(belief))
-            print('InclusionSuccess: ')
-            print(allBeliefs.AGMInclusionSuccess(oriBeliefsSet))
+        allBeliefs=copy.deepcopy(contraction(allBeliefs, belief))
 
     elif action == 'p':
         print('Size of beleife base: ', len(allBeliefs.beliefsSetOriginal))
