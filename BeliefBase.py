@@ -58,7 +58,21 @@ class BeliefBase:
                 return 0
         return 1
 
+    def AGMContractionSuccess(self, newBelief):
+        for belief in self.beliefsSetOriginal:
+            if to_cnf(belief.belief) == to_cnf(newBelief):
+                return 0
+        return 1
 
+    def AGMInclusionSuccess(self, oriBeliefSet):
+        counter = 0
+        for belief in self.beliefsSetOriginal:
+            for oribelief in oriBeliefSet.beliefsSetOriginal:
+                if belief.belief == oribelief.belief:
+                    counter += 1
+        if counter == len(self.beliefsSetOriginal):
+            return 1
+        return 0
 
     def __repr__(self):
         if len(self.beliefsSetOriginal) == 0:

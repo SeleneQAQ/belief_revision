@@ -131,6 +131,7 @@ def interfaceLoop(allBeliefs):
         belief = belief.lower()
         contrary_belief = "~("+belief+")"
         contrary_belief = to_cnf(contrary_belief)
+        oriBeliefsSet = copy.deepcopy(allBeliefs)
         newBeliefsSet = BeliefBase()
         resultBeliefsSet = BeliefBase()
         allBeliefs.beliefsSetOriginal.sort(key=lambda x: x.plausibilityOrder, reverse=True)
@@ -146,6 +147,10 @@ def interfaceLoop(allBeliefs):
                 newBeliefsSet = copy.deepcopy(resultBeliefsSet)
             print(resultBeliefsSet)
             allBeliefs = copy.deepcopy(resultBeliefsSet)
+            print('ContractionSuccess: ')
+            print(allBeliefs.AGMContractionSuccess(belief))
+            print('InclusionSuccess: ')
+            print(allBeliefs.AGMInclusionSuccess(oriBeliefsSet))
 
     elif action == 'p':
         print('Size of beleife base: ', len(allBeliefs.beliefsSetOriginal))
