@@ -31,14 +31,14 @@ def unitResolution(beliefBase, newBelief): #input only belief orginal array
             for belief in beliefBase:
                 beliefs.append(belief.belief)
 
-            print('clauses: ', clausesAfterResolution, 'beliefset: ', set(beliefs))
-            clausesAfterResolution = clausesAfterResolution.union(set(resolvant))
             
-        #if len(clausesAfterResolution) >0:
-            if clausesAfterResolution.issubset(set(beliefs)):
-                isResolutionFinished = True
-                print('resolution finished, failed')
-                return False
+            clausesAfterResolution = set(clausesAfterResolution.union(set(resolvant)))
+        print('clauses: ', clausesAfterResolution, 'beliefset: ', set(beliefs))
+    #if len(clausesAfterResolution) >0:
+        if clausesAfterResolution.issubset(set(beliefs)):
+            isResolutionFinished = True
+            print('resolution finished, failed')
+            return False
 
         new = Belief.Belief('hehh')
         for iteral in clausesAfterResolution:
