@@ -8,13 +8,16 @@ def unitResolution(beliefBase, newBelief): #input only belief orginal array
     allPairs = []
     clausesAfterResolution = set()
     isResolutionFinished = False
-    #To do: split & sing to comas
+ 
+    #print('beliefBase', beliefBase, 'newBelief: ', to_cnf(newBelief))
+    if len(beliefBase) == 1: #len(to_cnf(newBelief)):
+        return False
     while isResolutionFinished ==False:
         sizeOfBeliefBase = len(beliefBase)
         allPairs = [(beliefBase[i], beliefBase[j])
                  for i in range(sizeOfBeliefBase) for j in range(i + 1, sizeOfBeliefBase)]
 
-        print('pairs: ', allPairs)
+        #print('pairs: ', allPairs)
 
         for [clause1, clause2] in allPairs:
             clause1 = to_cnf(clause1.belief)
@@ -23,7 +26,7 @@ def unitResolution(beliefBase, newBelief): #input only belief orginal array
             resolvant = factor_clauses(clause1, clause2)
             #print('new clause from resolvant: ', resolvant)
             if False in resolvant:
-                print('resolution finished, sucess')
+                #print('resolution finished, sucess')
                 return True
                 #continue
 
@@ -33,31 +36,31 @@ def unitResolution(beliefBase, newBelief): #input only belief orginal array
 
             
             clausesAfterResolution = set(clausesAfterResolution.union(set(resolvant)))
-        print('clauses: ', clausesAfterResolution, 'beliefset: ', set(beliefs))
+        #print('clauses: ', clausesAfterResolution, 'beliefset: ', set(beliefs))
     #if len(clausesAfterResolution) >0:
         if clausesAfterResolution.issubset(set(beliefs)):
             isResolutionFinished = True
-            print('resolution finished, failed')
+            #print('resolution finished, failed')
             return False
 
         new = Belief.Belief('hehh')
         for iteral in clausesAfterResolution:
             ifCanAdd = True
-            print('comparing  this:')
-            print(iteral, type(iteral))
-            print('with this: ')
+            #print('comparing  this:')
+            #print(iteral, type(iteral))
+            #print('with this: ')
             for existingIterals in beliefBase:
                 
-                print(existingIterals.belief,  type(existingIterals.belief))
+                #print(existingIterals.belief,  type(existingIterals.belief))
                 if iteral == str(existingIterals.belief):    
                     ifCanAdd = False
                     break
                     
             if ifCanAdd ==True:
                 new = Belief.Belief(iteral) 
-                print('appended: ', iteral)
+                #print('appended: ', iteral)
                 beliefBase.append(new)
-            print(beliefBase)
+            #print(beliefBase)
 
         #if len(clausesAfterResolution) == 0:
         #    print('resolution finished, failed clauses were empty')
@@ -65,21 +68,21 @@ def unitResolution(beliefBase, newBelief): #input only belief orginal array
                         
                
 def factor_clauses(clause1, clause2):
-    print()
+    #print()
     literals1 = str(clause1).replace(" ", "").split('|')
     literals2 = str(clause2).replace(" ", "").split('|')
 
     new_clause = []
-    print('entered resolvant with: ',clause1, ' ',  clause2)
+    #print('entered resolvant with: ',clause1, ' ',  clause2)
     for l1 in literals1:
         for l2 in literals2:
-            print(l1, ' ',  l2)
+            #print(l1, ' ',  l2)
             if f'{l1}' == f'~{l2}' or f'~{l1}' == f'{l2}':
                 a = literals1.copy()
                 a.remove(l1)
                 b = literals2.copy()
                 b.remove(l2)     
-                print(a, '+', b)
+                #print(a, '+', b)
                 # Use set to remove dublicates
                 clause = list(set(a + b))
                 if clause == []:
@@ -89,15 +92,15 @@ def factor_clauses(clause1, clause2):
                     # print('clause:', clause)
                     clause_text = '|'.join(clause)
                     new_clause.append('|'.join(clause))
-                print('enetered the equality',a,  b,  clause  )
+                #print('enetered the equality',a,  b,  clause  )
                     # print('clause text:', clause_text)
-    print('returned clause: ', new_clause)     
+    #print('returned clause: ', new_clause)     
     return new_clause
 
 def validityCheck(newBelief, allowedSigns):
     q = ""
     for i in newBelief:
-        print(i)
+        #print(i)
         if i.isalpha():
             q = "".join([q,i])
     #print('result', q)
