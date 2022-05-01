@@ -56,16 +56,30 @@ def contraction(allBeliefs, belief):
     resultBeliefsSet.beliefsSetOriginal.sort(key=lambda x: x.plausibilityOrder, reverse=False)
     return resultBeliefsSet
 
-def checkPossibilityOrder(allBeliefs):
+def checkPossibilityOrder(beliefs):
     print()
     logical_things = []
     belief_possibility = {}
-    allBeliefs.convertToCNF()
+
+    beliefsInCNF = []
+    longest_logic = 0
+    for i in range(len(beliefs.beliefsSetOriginal)):
+        cnfbelief = to_cnf(beliefs.beliefsSetOriginal[i].belief)
+        # print(beliefs.beliefsSetOriginal[i].belief, 'to CFN:', cnfbelief)
+        beliefsInCNF.append(cnfbelief)
+
+        if len(beliefs.beliefsSetOriginal[i].belief) > longest_logic:
+            longest_logic = len(beliefs.beliefsSetOriginal[i].belief)
+
+    # print()
+    # print('longest logic:', longest_logic)
+
+    print(''.rjust(longest_logic, " "), end='')
     for i in range(2**len(logic)):
         line = ''
         for j in range(len(logic)):
             if i//2**j%2 == 0:
-                line += ' ' + logic[j].lower()
+                line += '  ' + logic[j].lower()
             else:
                 line += ' ~' + logic[j].lower()
                 # line += logic[j].upper()
@@ -73,49 +87,61 @@ def checkPossibilityOrder(allBeliefs):
         logical_things.append(line)
         belief_possibility[line] = []
 
-        print(f'\t{line}', end='')
+        print(line.rjust((3*len(logic))+1, " "), end='')
+        
     print()
     print()
     # print(logical_things)
 
     
-    for i in range(len(allBeliefs.beliefsSetOriginal)):
-        print(f'{allBeliefs.beliefsSetOriginal[i].belief}\t' , end=' ')
+    for i in range(len(beliefs.beliefsSetOriginal)):
+        print(beliefs.beliefsSetOriginal[i].belief.ljust(longest_logic, " ") , end='')
         for log in logical_things:
+
             # print(f'{log}\t', end='')
-            val = 0
-            
             # for l in log:
-            j = 0
-            sentance = str(allBeliefs.beliefsSetCNF[i].belief)
-            while j < len(sentance):
-            # for j in range(len(log)):
-                # print(f'j = {j}')
+            sentences = str(beliefsInCNF[i]).split('&')
+            total = 0
+            for sentence in sentences:
                 
-                if sentance[j] == ' ':
-                    j += 1
-                    continue
-                testString = sentance[j]
-                if sentance[j] == '~':
-                    testString += sentance[j+1]
+                j = 0
+                while j < len(sentence):
+                # for j in range(len(log)):
+                    # print(f'j = {j}')
+                    
+                    if sentence[j] == ' ':
+                        j += 1
+                        continue
+                    testString = sentence[j]
+                    if sentence[j] == '~':
+                        testString += sentence[j+1]
+                        j += 1
+                    
+                    # print(f'Athuga hvort {testString} sé í {log}')
+
+                    if testString in log.split(' '):
+                        total += 1
+                        break # If one element is true in list of or's the whole list is true
+
                     j += 1
 
-                # print(f'Athuga hvort {testString} sé í {log}' )
-                if testString in log.split(' '):
-                    val = 1
-                
-                j += 1
+            if total == len(sentences):
+                val = 1
+            else:
+                val = 0
             
             belief_possibility[log].append(val)
 
-            print(f'{val}\t', end='')
+            print(str(val).center((3*len(logic))+1, " "), end='')
+   
 
         # belief_possibility[allBeliefs.beliefsSetOriginal[i].belief] = pos_list.copy()
         print()
     
+    print(''.rjust(longest_logic, " "), end='')
     for th in logical_things:
         pos = sum(belief_possibility[th])/len(belief_possibility[th])
-        print(f'\t%.2f' % pos, end='')
+        print(('%.2f' % pos).center((3*len(logic))+1, " "), end='')
 
     print()
 
