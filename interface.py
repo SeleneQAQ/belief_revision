@@ -11,19 +11,24 @@ import copy
 ##
 # variables a user can use as for now: p and q 
 ##
-logic = ['p','q']
+logic = ['p','q', 'r']
 
 # allBeliefs = BeliefBase()
 
+def welcome():
+    print('Welcome to belief revision program. You can add new beliefs by revision,')
+    print('contraction updates the Belief Base by removing the clauses that implies the input to contract with')
 
 def menu():
+    
     print("Press button to do action: ")
     print('m: Menu')
-    print('a: Add belief')
-    print('c: Calculate possibility order')
     print('p: Print all beliefs')
-    print('r: Resolution')
-    print('rev: revision')
+    print('r: revision')
+    print('c: contraction')
+
+    print('pos: Calculate possibility order')
+    print('res: Resolution')
     print('q: Quit')
 
 def contraction(allBeliefs, belief):
@@ -44,11 +49,10 @@ def contraction(allBeliefs, belief):
             newBeliefsSet = copy.deepcopy(resultBeliefsSet)
         if resolution == True:
             newBeliefsSet = copy.deepcopy(resultBeliefsSet)
-    print(resultBeliefsSet)
-    print('ContractionSuccess: ')
-    print(allBeliefs.AGMContractionSuccess(belief))
-    print('InclusionSuccess: ')
-    print(allBeliefs.AGMInclusionSuccess(oriBeliefsSet))
+    #print(resultBeliefsSet)
+    #print('ContractionSuccess: ', allBeliefs.AGMContractionSuccess(belief))
+    #print('InclusionSuccess: ', allBeliefs.AGMInclusionSuccess(oriBeliefsSet))
+
     resultBeliefsSet.beliefsSetOriginal.sort(key=lambda x: x.plausibilityOrder, reverse=False)
     return resultBeliefsSet
 
@@ -56,7 +60,7 @@ def checkPossibilityOrder(allBeliefs):
     print()
     logical_things = []
     belief_possibility = {}
-
+    allBeliefs.convertToCNF()
     for i in range(2**len(logic)):
         line = ''
         for j in range(len(logic)):
@@ -76,7 +80,7 @@ def checkPossibilityOrder(allBeliefs):
 
     
     for i in range(len(allBeliefs.beliefsSetOriginal)):
-        print(f'{allBeliefs.beliefsSetOriginal[i].belief}\t' , end='')
+        print(f'{allBeliefs.beliefsSetOriginal[i].belief}\t' , end=' ')
         for log in logical_things:
             # print(f'{log}\t', end='')
             val = 0
@@ -119,44 +123,27 @@ def checkPossibilityOrder(allBeliefs):
     # print(allBeliefs.beliefsSet)
 
 
-
-
-
 def interfaceLoop(allBeliefs):
     
     action = input()
     action = action.lower()
     if action =='m':
         menu()
-    elif action == 't':
-        print('Enter belief: ')
-        belief = input()
-        belief = belief.lower()
-        formula_splitted = splitFormula('&', belief)
-        print('splitted formula: ', formula_splitted)
-        for formula in formula_splitted:
-            allBeliefs.addBelief(formula)
-        print(allBeliefs)
-        allBeliefs.convertToCNF()
-        allBeliefs.printCNF()
 
-
-    elif action == 'a':
-        print('Enter belief: ')
-        belief = input()
-        belief = belief.lower()
-        allBeliefs.addBelief(belief)
-
-    elif action == 'c':
+    elif action == 'pos':
         checkPossibilityOrder(allBeliefs)
 
-    elif action == 'co':
-        print('Enter belief: ')
+    elif action == 'c':
+        
+        print('Enter belief that you do not want to believe in now: ')
         belief = input()
+        isInputValid = validityCheck(belief, logic)
+        if isInputValid == False: interfaceLoop(allBeliefs)
+
         allBeliefs= copy.deepcopy(contraction(allBeliefs, belief))
 
     elif action == 'p':
-        print('Size of beleife base: ', len(allBeliefs.beliefsSetOriginal))
+        print('Size of belief base: ', len(allBeliefs.beliefsSetOriginal))
         print('Printing Belief Base: ')
        
         print(allBeliefs)
@@ -165,12 +152,14 @@ def interfaceLoop(allBeliefs):
     elif action == 'q':
         return
 
-    elif action == 'r':
+    elif action == 'res':
+        print('Entered resolution. It will do the resolution with the Belief base and the input you enter. ')
         print('Enter belief: ')
         belief = input()
         belief = belief.lower()
         
-        contrary_belief = "~("+belief+")"
+        #contrary_belief = "~("+belief+")"
+        contrary_belief = belief
         contrary_belief = to_cnf(contrary_belief)
         split_contrary_belief = splitFormula('&', contrary_belief)
        
@@ -186,10 +175,12 @@ def interfaceLoop(allBeliefs):
         if resolution == False:
             allBeliefs.addBelief(belief)
 
-    elif action == 'rev':
+    elif action == 'r':
         print('Enter belief: ')
         belief = input()
         belief = belief.lower()
+        isInputValid = validityCheck(belief, logic)
+        if isInputValid == False: interfaceLoop(allBeliefs)
 
         contrary_belief = "~(" + belief + ")"
 
@@ -197,28 +188,27 @@ def interfaceLoop(allBeliefs):
         newBeliefsSet.addBlindly(contrary_belief)
         newBeliefsSet.convertToCNF()
 
-        isInputValid = validityCheck(belief, logic)
-        if isInputValid == False: interfaceLoop(allBeliefs)
-
         resolution = unitResolution(newBeliefsSet.beliefsSetCNF, belief)
 
         if resolution == True:
+            #print('resolution result: True, adding new belief to Belief Base')
             allBeliefs.addBelief(belief)
         else:
-            print(contrary_belief)
+            #print('resolution result: False, contracting the Belief Base with', contrary_belief, 'and adding', belief, 'to Belief Base')
             allBeliefs = copy.deepcopy(contraction(allBeliefs, contrary_belief))
-            allBeliefs.addBlindly(belief)
+            allBeliefs.addBelief(belief)
 
 
     else:
         print('wrong input. press button to do action: ')
         interfaceLoop(allBeliefs)
-
+    print()
     print("DONE. press button to do action: ")
     interfaceLoop(allBeliefs)
     
 
 if __name__ == '__main__':
+    welcome()
     allBeliefs = BeliefBase()
     allBeliefs.addBelief('p|q')
     allBeliefs.addBelief('p>>q')
