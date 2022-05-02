@@ -61,8 +61,8 @@ class BeliefBase:
 
         for belief in self.beliefsSetOriginal:
             if to_cnf(belief.belief) == to_cnf(newBelief):
-                print('Previous belief: ', belief.belief, 'order:', belief.plausibilityOrder, 'is the same.')
-                print('Deleting it before adding new belief', newBelief, 'with order 1' )
+                #print('Previous belief: ', belief.belief, 'order:', belief.plausibilityOrder, 'is the same.')
+                #print('Deleting it before adding new belief', newBelief, 'with order 1' )
                 self.beliefsSetOriginal.remove(belief)
                 self.addBelief(newBelief)
                 return 0

@@ -2,7 +2,7 @@ import argparse
 import logging
 
 from sympy import to_cnf, SympifyError
-from agm_functions import checkConsistency, checkVacuity, checkSuccess
+from agm_functions import checkConsistency, checkVacuity, checkSuccess, checkInclusion
 
 import calculations
 from BeliefBase import BeliefBase
@@ -204,18 +204,20 @@ def interfaceLoop(allBeliefs):
         set1 = copy.deepcopy(allBeliefs)
         set2 = copy.deepcopy(allBeliefs)### have to use multiple copies since some reorderign is done with deepcopy that conflicts with equaltiy
         set3 = copy.deepcopy(allBeliefs)### have to use multiple copies since some reorderign is done with deepcopy that conflicts with equaltiy
+        set4 = copy.deepcopy(allBeliefs)  ### have to use multiple copies since some reorderign is done with deepcopy that conflicts with equaltiy
+        set4.addBelief(belief)
 
         ### vacuity
         print("---------------------------------------------VACUITY------------------------------------------------")
         vacuity = checkVacuity(set2, belief)
-        print(vacuity)
+        print("Postulate holds:", vacuity)
         print("----------------------------------------------------------------------------------------------------")
         print("")
 
         ### consitency
         print("------------------------------------------CONSISTENCY-----------------------------------------------")
-        bbConsistency = checkConsistency(set1, "belief base")
-        print("belief base is consistent:", bbConsistency)
+        bbConsistency = checkConsistency(set1, "Belief Base")
+        print("Belief Base is consistent:", bbConsistency)
         print("")
 
         disallowed_characters = "()"
@@ -229,37 +231,58 @@ def interfaceLoop(allBeliefs):
         for bel in form:
             bs.addBlindly(bel)
 
-        phiConsistency = checkConsistency(bs, "phi")
-        print("phi is consistent:", phiConsistency)
+        phiConsistency = checkConsistency(bs, "Phi")
+        print("Phi is consistent:", phiConsistency)
         print("")
 
         set3 = revision(set3, belief)
 
-        revisedConsistency = checkConsistency(set3, "revised set")
-        print("revised set is consistent:", revisedConsistency)
+        revisedConsistency = checkConsistency(set3, "Revised set")
+        print("Revised set is consistent:", revisedConsistency)
         print("")
 
         if bbConsistency:
             if phiConsistency:
                 if revisedConsistency:
-                    print("B is consistent, phi is consistent, B*phi is consistent")
-                    print("consistency holds")
+                    print("Postulate holds:", True)
                 else:
-                    print("B is consistent, phi is consistent, B*phi is inconsistent")
-                    print("consistency doesnt hold")
+                    print("Postulate holds:", False)
             else:
-                print("B is consistent, phi is inconsistent")
-                print("phi needs to be consistent to check for consistency postulate")
+                print("phi is inconsistent")
+                print("Postulate holds:", True)
         else:
             print("inconsistency in belief base")
 
         print("----------------------------------------------------------------------------------------------------")
         print("")
         print("---------------------------------------------SUCCESS------------------------------------------------")
-        success = checkSuccess(revisionBeliefSet, belief)
-
+        success = checkSuccess(set3, belief)
+        print("Postulate holds:",success)
         print("----------------------------------------------------------------------------------------------------")
-
+        print("")
+        print("-------------------------------------------INCLUSION------------------------------------------------")
+        print("Checking if B*p is a subset of B+p")
+        inclusion = checkInclusion(set3, set4)
+        print("B*p is a subset of B+p:",inclusion)
+        print("Postulate holds:", inclusion)
+        print("----------------------------------------------------------------------------------------------------")
+        print("")
+        print("-------------------------------------------AGM SUMMARY----------------------------------------------")
+        print("vacuity:", vacuity)
+        if bbConsistency:
+            if phiConsistency:
+                if revisedConsistency:
+                    print("consistency:", True)
+                else:
+                    print("consistency:", False)
+            else:
+                print("phi is inconsistent")
+                print("consistency:", True)
+        else:
+            print("inconsistency in belief base")
+        print("success:", success)
+        print("inclusion",inclusion)
+        print("----------------------------------------------------------------------------------------------------")
     elif action == 'r':
         print('Enter belief: ')
         belief = input()
@@ -333,6 +356,7 @@ if __name__ == '__main__':
     welcome()
     allBeliefs = BeliefBase()
     allBeliefs.addBelief('p')
+    allBeliefs.addBelief('q>>r')
     menu()
     interfaceLoop(allBeliefs)
 

@@ -29,6 +29,21 @@ def contraction(allBeliefs, belief):
     resultBeliefsSet.beliefsSetOriginal.sort(key=lambda x: x.plausibilityOrder, reverse=False)
     return resultBeliefsSet
 
+
+def checkSuccess(revisionBeliefSet, belief):
+    bs = copy.deepcopy(revisionBeliefSet)
+    beliefs = bs.beliefsSetOriginal
+    print("checking if " + belief + " is in revised set:")
+    print(beliefs)
+    for bel in beliefs:
+        bel = bel.belief
+
+        success = (bel == belief)
+        if success:
+            break
+
+    return success
+
 def checkVacuity(beliefSet, phi):
     bs = copy.deepcopy(beliefSet)
     old_bs = copy.deepcopy(beliefSet)
@@ -43,23 +58,38 @@ def checkVacuity(beliefSet, phi):
     revised_set.addBelief(phi)
 
     ### vacuity
-    print("vacuity check:")
-    print("if ~p is not a memeber of b, b*p = b+p:")
+    print("if ~p is not a member of B, B*p = B+p:")
     if vac_resolution:
         print(contrary_belief, "is not a member of belief set, vacuity holds")
         vacuity = True
     else:
         old_bs.addBelief(phi)
-        print("b+p", old_bs.beliefsSetOriginal)
-        print("b*p", revised_set.beliefsSetOriginal)
+        print("B+p:", old_bs.beliefsSetOriginal)
+        print("B*p:", revised_set.beliefsSetOriginal)
         vacuity = (old_bs == revised_set)
-        print("if sets are similar vacuitity holds:", vacuity)
+        print("B+p == B*p:", vacuity)
     return vacuity
+
+def checkInclusion(revisionBeliefSet, simpleAddBeliefSet):
+    print("B*p:")
+    print(revisionBeliefSet)
+    print("")
+    print("B+p:")
+    print(simpleAddBeliefSet)
+    counter = 0
+    for belief in revisionBeliefSet.beliefsSetOriginal:
+        for simpleBelief in simpleAddBeliefSet.beliefsSetOriginal:
+            if belief.belief == simpleBelief.belief:
+                counter += 1
+    if counter == len(revisionBeliefSet.beliefsSetOriginal):
+        return True
+    return False
 
 def checkConsistency(beliefSet, name):
     bs = copy.deepcopy(beliefSet)
     beliefs = bs.beliefsSetOriginal
-    print("testing " + name + " consistency with beliefs:")
+    print("Testing " + name + " consistency:")
+    print("Beliefs in " + name + ":")
     print(bs.beliefsSetOriginal)
     print("")
     for bel in beliefs:
@@ -77,17 +107,3 @@ def checkConsistency(beliefSet, name):
             break
 
     return bs_consistency
-
-    def checkSuccess(revisionBeliefSet, belief):
-        bs = copy.deepcopy(revisionbeliefSet)
-        beliefs = bs.beliefsSetOriginal
-        print(belief)
-        for bel in beliefs:
-            bel = bel.belief
-            print(bel)
-
-            success = (bel == belief)
-            if success:
-                break
-
-        return success
