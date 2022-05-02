@@ -36,5 +36,5 @@ When writing in a belief please use the following signs:
 
 | for or
 
->> for implies
+'''>>''' for implies
 
