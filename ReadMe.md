@@ -16,6 +16,8 @@ c: contraction
 
 pos: Calculate possibility order
 
+agm: Test for agm postulates
+
 res: Resolution
 
 q: Quit
