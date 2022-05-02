@@ -271,14 +271,16 @@ def interfaceLoop(allBeliefs):
         newBeliefsSet = copy.deepcopy(allBeliefs)
         newBeliefsSet.addBlindly(contrary_belief)
         newBeliefsSet.convertToCNF()
-        newBeliefsSet.printCNF()
+        #newBeliefsSet.printCNF()
         #newBelief = newBeliefsSet.beliefsSet[-1] # get last element, so the belief just enetered by user
         isInputValid = validityCheck(belief, logic)
         if isInputValid == False: interfaceLoop(allBeliefs)
 
         resolution = unitResolution(newBeliefsSet.beliefsSetCNF, belief)
         if resolution == False:
-            allBeliefs.addBelief(belief)
+            print('resolution failed. You can imply', belief, 'from the belief base')
+        else:
+            print('resolution succeed. You cannot imply', belief, 'from the belief base')
 
     else:
         print('wrong input. press button to do action: ')
@@ -294,5 +296,6 @@ if __name__ == '__main__':
     allBeliefs.addBelief('p|q')
     allBeliefs.addBelief('p>>q')
     allBeliefs.addBelief('p&q')
+    #allBeliefs.addBelief('p')
     menu()
     interfaceLoop(allBeliefs)
