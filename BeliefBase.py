@@ -74,7 +74,7 @@ class BeliefBase:
                 return 0
         return 1
 
-    def AGMInclusionSuccess(self, oriBeliefSet):
+    def AGMContractionInclusion(self, oriBeliefSet):
         counter = 0
         for belief in self.beliefsSetOriginal:
             for oribelief in oriBeliefSet.beliefsSetOriginal:
@@ -83,7 +83,6 @@ class BeliefBase:
         if counter == len(self.beliefsSetOriginal):
             return 1
         return 0
-
 
 
     def __repr__(self):

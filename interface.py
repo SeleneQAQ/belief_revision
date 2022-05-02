@@ -2,8 +2,8 @@ import argparse
 import logging
 
 from sympy import to_cnf, SympifyError
-from agm_functions import checkConsistency, checkVacuity
 
+import calculations
 from BeliefBase import BeliefBase
 import Belief
 from calculations import unitResolution, splitFormula, validityCheck
@@ -28,7 +28,6 @@ def menu():
     print('r: revision')
     print('c: contraction')
 
-    print('agm: Test for agm postulates')
     print('pos: Calculate possibility order')
     print('res: Resolution')
     print('q: Quit')
@@ -180,83 +179,6 @@ def interfaceLoop(allBeliefs):
     elif action == 'q':
         return
 
-    elif action == 'agm':
-        print('Enter belief: ')
-        belief = input()
-        belief = belief.lower()
-
-        isInputValid = validityCheck(belief, logic)
-        if isInputValid == False: interfaceLoop(allBeliefs)
-
-        contrary_belief = "~(" + belief + ")"
-
-        set1 = copy.deepcopy(allBeliefs)
-        set2 = copy.deepcopy(allBeliefs)### have to use multiple copies since some reorderign is done with deepcopy that conflicts with equaltiy
-        set3 = copy.deepcopy(allBeliefs)### have to use multiple copies since some reorderign is done with deepcopy that conflicts with equaltiy
-
-        ### vacuity
-        vacuity = checkVacuity(set2, belief)
-        print(vacuity)
-        print("")
-        print("")
-
-        ### consitency
-        print("consistency check:")
-        bbConsistency = checkConsistency(set1, "belief base")
-        print("belief base is consistent:", bbConsistency)
-        print("")
-
-        disallowed_characters = "()"
-        form = belief.split("&")
-
-        for i in range(len(form)):
-            for character in disallowed_characters:
-                form[i] = form[i].replace(character, "")
-        bs = BeliefBase()
-
-        for bel in form:
-            bs.addBlindly(bel)
-
-        phiConsistency = checkConsistency(bs, "phi")
-        print("phi is consistent:", phiConsistency)
-        print("")
-
-        ## revision
-        set3 = copy.deepcopy(contraction(set3, contrary_belief))
-        set3.addBelief(belief)
-
-        revisedConsistency = checkConsistency(set3, "revised set")
-        print("revised set is consistent:", revisedConsistency)
-        print("")
-
-        if bbConsistency:
-            if phiConsistency:
-                if revisedConsistency:
-                    print("B is consistent, phi is consistent, B*phi is consistent")
-                    print("consistency holds")
-                else:
-                    print("B is consistent, phi is consistent, B*phi is inconsistent")
-                    print("consistency doesnt hold")
-            else:
-                print("B is consistent, phi is inconsistent")
-                print("phi needs to be consistent to check for consistency postulate")
-        else:
-            print("inconsistency in belief base")
-
-
-    elif action == 'r':
-        print('Enter belief: ')
-        belief = input()
-        belief = belief.lower()
-
-        contrary_belief = "~(" + belief + ")"
-
-        isInputValid = validityCheck(belief, logic)
-        if isInputValid == False: interfaceLoop(allBeliefs)
-
-        allBeliefs = copy.deepcopy(contraction(allBeliefs, contrary_belief))
-        allBeliefs.addBelief(belief)
-
     elif action == 'res':
         print('Entered resolution. It will do the resolution with the Belief base and the input you enter. ')
         print('Enter belief: ')
@@ -271,16 +193,42 @@ def interfaceLoop(allBeliefs):
         newBeliefsSet = copy.deepcopy(allBeliefs)
         newBeliefsSet.addBlindly(contrary_belief)
         newBeliefsSet.convertToCNF()
-        #newBeliefsSet.printCNF()
+        newBeliefsSet.printCNF()
         #newBelief = newBeliefsSet.beliefsSet[-1] # get last element, so the belief just enetered by user
         isInputValid = validityCheck(belief, logic)
         if isInputValid == False: interfaceLoop(allBeliefs)
 
         resolution = unitResolution(newBeliefsSet.beliefsSetCNF, belief)
         if resolution == False:
-            print('resolution failed. You can imply', belief, 'from the belief base')
+            allBeliefs.addBelief(belief)
+
+    elif action == 'r':
+        print('Enter belief: ')
+        belief = input()
+        belief = belief.lower()
+        isInputValid = validityCheck(belief, logic)
+        if isInputValid == False: interfaceLoop(allBeliefs)
+
+        contrary_belief = "~(" + belief + ")"
+
+        newBeliefsSet = copy.deepcopy(allBeliefs)
+        newBeliefsSet.addBlindly(contrary_belief)
+        simpleAddBeliefsSet = copy.deepcopy(allBeliefs)
+        simpleAddBeliefsSet.addBlindly(belief)
+        newBeliefsSet.convertToCNF()
+
+        resolution = unitResolution(newBeliefsSet.beliefsSetCNF, belief)
+
+        if resolution == True:
+            #print('resolution result: True, adding new belief to Belief Base')
+            allBeliefs.addBelief(belief)
         else:
-            print('resolution succeed. You cannot imply', belief, 'from the belief base')
+            #print('resolution result: False, contracting the Belief Base with', contrary_belief, 'and adding', belief, 'to Belief Base')
+            allBeliefs = copy.deepcopy(contraction(allBeliefs, contrary_belief))
+            allBeliefs.addBelief(belief)
+        print('result of revision:')
+        print(calculations.AGMRevisionInclusion(allBeliefs, simpleAddBeliefsSet))
+
 
     else:
         print('wrong input. press button to do action: ')
@@ -293,9 +241,7 @@ def interfaceLoop(allBeliefs):
 if __name__ == '__main__':
     welcome()
     allBeliefs = BeliefBase()
-    allBeliefs.addBelief('p|q')
-    allBeliefs.addBelief('p>>q')
-    allBeliefs.addBelief('p&q')
-    #allBeliefs.addBelief('p')
+    allBeliefs.addBelief('p')
     menu()
     interfaceLoop(allBeliefs)
+

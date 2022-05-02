@@ -166,3 +166,14 @@ def dissociate(op, args):
 
     collect(args)
     return result
+
+
+def AGMRevisionInclusion(revisionBeliefSet, simpleAddBeliefSet):
+    counter = 0
+    for belief in revisionBeliefSet.beliefsSetOriginal:
+        for simpleBelief in simpleAddBeliefSet.beliefsSetOriginal:
+            if belief.belief == simpleBelief.belief:
+                counter += 1
+    if counter == len(revisionBeliefSet.beliefsSetOriginal):
+        return 1
+    return 0
