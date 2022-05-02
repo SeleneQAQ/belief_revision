@@ -299,22 +299,24 @@ def interfaceLoop(allBeliefs):
         belief = input()
         belief = belief.lower()
         
-        #contrary_belief = "~("+belief+")"
-        contrary_belief = belief
+        contrary_belief = "~("+belief+")"
+        #contrary_belief = belief
         contrary_belief = to_cnf(contrary_belief)
         split_contrary_belief = splitFormula('&', contrary_belief)
        
         newBeliefsSet = copy.deepcopy(allBeliefs)
         newBeliefsSet.addBlindly(contrary_belief)
         newBeliefsSet.convertToCNF()
-        newBeliefsSet.printCNF()
+        #newBeliefsSet.printCNF()
         #newBelief = newBeliefsSet.beliefsSet[-1] # get last element, so the belief just enetered by user
         isInputValid = validityCheck(belief, logic)
         if isInputValid == False: interfaceLoop(allBeliefs)
 
         resolution = unitResolution(newBeliefsSet.beliefsSetCNF, belief)
         if resolution == False:
-            allBeliefs.addBelief(belief)
+            print('resolution failed. You cannot imply', belief, 'from Belief Base')
+        else:
+            print('resolution succeed. You can imply', belief, 'from Belief Base')
 
     elif action == 'r':
         print('Enter belief: ')
