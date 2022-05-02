@@ -13,7 +13,7 @@ import copy
 ##
 # variables a user can use as for now: p and q 
 ##
-logic = ['p','q', 'r']
+logic = ['p','q', 'r', 's']
 
 # allBeliefs = BeliefBase()
 
@@ -357,8 +357,9 @@ def interfaceLoop(allBeliefs):
 if __name__ == '__main__':
     welcome()
     allBeliefs = BeliefBase()
-    allBeliefs.addBelief('p')
-    allBeliefs.addBelief('q>>r')
+    # allBeliefs.addBelief('p')
+    # allBeliefs.addBelief('q>>r')
+
     menu()
     interfaceLoop(allBeliefs)
 
