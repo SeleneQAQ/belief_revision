@@ -77,3 +77,17 @@ def checkConsistency(beliefSet, name):
             break
 
     return bs_consistency
+
+    def checkSuccess(revisionBeliefSet, belief):
+        bs = copy.deepcopy(revisionbeliefSet)
+        beliefs = bs.beliefsSetOriginal
+        print(belief)
+        for bel in beliefs:
+            bel = bel.belief
+            print(bel)
+
+            success = (bel == belief)
+            if success:
+                break
+
+        return success

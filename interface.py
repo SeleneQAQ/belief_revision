@@ -2,7 +2,7 @@ import argparse
 import logging
 
 from sympy import to_cnf, SympifyError
-from agm_functions import checkConsistency, checkVacuity
+from agm_functions import checkConsistency, checkVacuity, checkSuccess
 
 import calculations
 from BeliefBase import BeliefBase
@@ -196,20 +196,24 @@ def interfaceLoop(allBeliefs):
         isInputValid = validityCheck(belief, logic)
         if isInputValid == False: interfaceLoop(allBeliefs)
 
-        contrary_belief = "~(" + belief + ")"
+        print("-----------------------------------------CHECKING AGM POSTULATES------------------------------------")
+        print("----------------------------------------------------------------------------------------------------")
+        print("")
+        print("")
 
         set1 = copy.deepcopy(allBeliefs)
         set2 = copy.deepcopy(allBeliefs)### have to use multiple copies since some reorderign is done with deepcopy that conflicts with equaltiy
         set3 = copy.deepcopy(allBeliefs)### have to use multiple copies since some reorderign is done with deepcopy that conflicts with equaltiy
 
         ### vacuity
+        print("---------------------------------------------VACUITY------------------------------------------------")
         vacuity = checkVacuity(set2, belief)
         print(vacuity)
-        print("")
+        print("----------------------------------------------------------------------------------------------------")
         print("")
 
         ### consitency
-        print("consistency check:")
+        print("------------------------------------------CONSISTENCY-----------------------------------------------")
         bbConsistency = checkConsistency(set1, "belief base")
         print("belief base is consistent:", bbConsistency)
         print("")
@@ -249,10 +253,12 @@ def interfaceLoop(allBeliefs):
         else:
             print("inconsistency in belief base")
 
-        ### success
-        print("success check:")
+        print("----------------------------------------------------------------------------------------------------")
+        print("")
+        print("---------------------------------------------SUCCESS------------------------------------------------")
+        success = checkSuccess(revisionBeliefSet, belief)
 
-
+        print("----------------------------------------------------------------------------------------------------")
 
     elif action == 'r':
         print('Enter belief: ')
