@@ -12,6 +12,9 @@ class BeliefBase:
         self.beliefsSetOriginal = []
         self.beliefsSetCNF = []
 
+    def __eq__(self, other):
+        return self.beliefsSetOriginal == other.beliefsSetOriginal
+
     def addBelief(self, belief):
         if self.deleteSameBelief(belief) == 1:
             
