@@ -29,7 +29,7 @@ Only 4 different letters can be used when writing in a new belief, those letters
 
 
 When writing in a belief please use the following signs:
-'''
+```
 ~ for not
 
 & for and 
@@ -37,5 +37,5 @@ When writing in a belief please use the following signs:
 | for or
 
 >> for implies
-'''
+```
 
