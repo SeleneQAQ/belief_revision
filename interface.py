@@ -2,6 +2,7 @@ import argparse
 import logging
 
 from sympy import to_cnf, SympifyError
+from agm_functions import checkConsistency, checkVacuity
 
 import calculations
 from BeliefBase import BeliefBase
@@ -28,6 +29,7 @@ def menu():
     print('r: revision')
     print('c: contraction')
 
+    print('agm: Test for agm postulates')
     print('pos: Calculate possibility order')
     print('res: Resolution')
     print('q: Quit')
@@ -56,6 +58,13 @@ def contraction(allBeliefs, belief):
 
     resultBeliefsSet.beliefsSetOriginal.sort(key=lambda x: x.plausibilityOrder, reverse=False)
     return resultBeliefsSet
+
+def revision(bs, phi):
+    contrary_belief = "~(" + phi + ")"
+    bb = copy.deepcopy(contraction(bs, contrary_belief))
+    bb.addBelief(phi)
+    return bb
+
 
 def checkPossibilityOrder(beliefs):
     print()
@@ -178,6 +187,82 @@ def interfaceLoop(allBeliefs):
 
     elif action == 'q':
         return
+
+    elif action == 'agm':
+        print('Enter belief: ')
+        belief = input()
+        belief = belief.lower()
+
+        isInputValid = validityCheck(belief, logic)
+        if isInputValid == False: interfaceLoop(allBeliefs)
+
+        contrary_belief = "~(" + belief + ")"
+
+        set1 = copy.deepcopy(allBeliefs)
+        set2 = copy.deepcopy(allBeliefs)### have to use multiple copies since some reorderign is done with deepcopy that conflicts with equaltiy
+        set3 = copy.deepcopy(allBeliefs)### have to use multiple copies since some reorderign is done with deepcopy that conflicts with equaltiy
+
+        ### vacuity
+        vacuity = checkVacuity(set2, belief)
+        print(vacuity)
+        print("")
+        print("")
+
+        ### consitency
+        print("consistency check:")
+        bbConsistency = checkConsistency(set1, "belief base")
+        print("belief base is consistent:", bbConsistency)
+        print("")
+
+        disallowed_characters = "()"
+        form = belief.split("&")
+
+        for i in range(len(form)):
+            for character in disallowed_characters:
+                form[i] = form[i].replace(character, "")
+        bs = BeliefBase()
+
+        for bel in form:
+            bs.addBlindly(bel)
+
+        phiConsistency = checkConsistency(bs, "phi")
+        print("phi is consistent:", phiConsistency)
+        print("")
+
+        set3 = revision(set3, belief)
+
+        revisedConsistency = checkConsistency(set3, "revised set")
+        print("revised set is consistent:", revisedConsistency)
+        print("")
+
+        if bbConsistency:
+            if phiConsistency:
+                if revisedConsistency:
+                    print("B is consistent, phi is consistent, B*phi is consistent")
+                    print("consistency holds")
+                else:
+                    print("B is consistent, phi is consistent, B*phi is inconsistent")
+                    print("consistency doesnt hold")
+            else:
+                print("B is consistent, phi is inconsistent")
+                print("phi needs to be consistent to check for consistency postulate")
+        else:
+            print("inconsistency in belief base")
+
+        ### success
+        print("success check:")
+
+
+
+    elif action == 'r':
+        print('Enter belief: ')
+        belief = input()
+        belief = belief.lower()
+
+        isInputValid = validityCheck(belief, logic)
+        if isInputValid == False: interfaceLoop(allBeliefs)
+
+        allBeliefs = revision(allBeliefs, belief)
 
     elif action == 'res':
         print('Entered resolution. It will do the resolution with the Belief base and the input you enter. ')
